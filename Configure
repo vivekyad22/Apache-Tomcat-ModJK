@@ -17,8 +17,56 @@ install open-jre-7 centos
 install tomcat
 create two Apps TEST1 TEST2
 
+https://blogs.gnome.org/bolsh/2011/12/09/connecting-apache-httpd-to-tomcat-with-mod_jk-the-bare-minimum/
+
+
+
 MOD_JK Techniques
 ------------------------------------------------------------------------------------------------------------
+
+HTTPD.conf
+----------------
+
+LoadModule    jk_module  modules/mod_jk.so
+
+JkWorkersFile conf/workers.properties
+
+JkLogFile     logs/mod_jk.log
+JkLogLevel    emerg
+JkLogStampFormat "[%a %b %d %H:%M:%S %Y] "
+JkOptions     +ForwardKeySize +ForwardURICompat -ForwardDirectories
+JkRequestLogFormat     "%w %V %T"
+
+JkMount  /status  stat
+JkMount  /*  balancer
+
+
+workers.properties
+----------------------------------------------------
+
+worker.list=balancer,stat
+
+worker.tomcat1.type=ajp13
+worker.tomcat1.port=8009
+worker.tomcat1.host=localhost
+
+worker.tomcat2.type=ajp13
+worker.tomcat2.port=8010
+worker.tomcat2.host=localhost
+
+worker.tomcat3.type=ajp13
+worker.tomcat3.port=8011
+worker.tomcat3.host=localhost
+
+
+worker.balancer.type=lb
+worker.balancer.balance_workers=tomcat1,tomcat2,tomcat3
+
+worker.stat.type=status
+
+
+
+
 
 
 
