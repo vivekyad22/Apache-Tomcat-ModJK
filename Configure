@@ -5,4 +5,19 @@ https://www.mulesoft.com/tcat/apache-tomcat-mod-jk-connector-configuration
 http://www.ramkitech.com/2012/10/tomcat-clustering-series-simple-load.html
 https://alextheedom.wordpress.com/microservices/set-up-tomcat-apache-and-mod_jk-cluster/
 
+Why ??
+----------------------------------------------------
+High availability by providing load balancing between multiple Tomcat app servers
+Static content can be processed and delivered much faster using Apache as front-end
+Extra functions can be added by using a wide range of Apache modules
+Tomcat is more seure and keeping apache in front will secure it more
+
+Install httpd & compile mod_jk module 
+install open-jre-7 centos
+install tomcat
+create two Apps TEST1 TEST2
+
+
+
+
 
