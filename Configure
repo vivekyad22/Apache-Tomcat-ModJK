@@ -86,7 +86,9 @@ http://crunchify.com/jvm-tuning-heapsize-stacksize-garbage-collection-fundamenta
 
 The amount allocated for the Young(Eden) generation is the value specified with -Xmn. The amount allocated for the older generation is the value of -Xmx minus the -Xmn. Generally, you don’t want the Eden to be too big or it will take too long for the GC to look through it for space that can be reclaimed.
 
+http://stackoverflow.com/questions/1634216/what-is-permsize-in-java
 
+http://stackoverflow.com/questions/11341494/how-do-i-properly-set-the-permgen-size
 
 
 
