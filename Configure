@@ -68,6 +68,27 @@ worker.stat.type=status
 
 
 
+SSL in tomcat
+-----------------------------------
+http://www.thegeekstuff.com/2011/09/ssl-for-tomcat-server/
+
+SSL in mod_jk Apache
+--------------------------------------
+
+http://serverfault.com/questions/174857/tomcat-behind-apache-httpd-with-ssl-and-client-certificates
+http://serverfault.com/questions/418590/ssl-configuration-tomcat-with-apache-and-mod-jk
+
+
+
+Learn PermSize, HeapSize, Xmx Xmm , garbage collector
+
+http://crunchify.com/jvm-tuning-heapsize-stacksize-garbage-collection-fundamental/
+
+The amount allocated for the Young(Eden) generation is the value specified with -Xmn. The amount allocated for the older generation is the value of -Xmx minus the -Xmn. Generally, you don’t want the Eden to be too big or it will take too long for the GC to look through it for space that can be reclaimed.
+
+
+
+
 
 
 
