@@ -93,8 +93,141 @@ http://stackoverflow.com/questions/11341494/how-do-i-properly-set-the-permgen-si
 
 
 
+Inside the tomcat startup script /bin/catalina.sh, the following environmental variables are used:
+
+JAVA_HOME is the path of JDK that used to run the tomcat and web applications
+CATALINA_HOME is the path of the tomcat binaries files
+CATALINA_BASE is the path the tomcat configuration files
+
+SSL in server.xml inside conf
+
+Connector SSLEnabled="true" acceptCount="100" clientAuth="false"
+    disableUploadTimeout="true" enableLookups="false" maxThreads="25"
+    port="8443" keystoreFile="/Users/loiane/.keystore" keystorePass="password"
+    protocol="org.apache.coyote.http11.Http11NioProtocol" scheme="https"
+    secure="true" sslProtocol="TLS" />
+    
+
+Why mod_jk
+------------------------
+
+mod_jserv was too complex. Because it was ported from Apache/JServ, it brought with it lots of JServ specific bits that aren't needed by Apache. 
+
+mod_jserv supported only Apache. Tomcat supports many web servers through a compatibility layer named the jk library. Supporting two different modes of work became problematic in terms of support, documentation and bug fixes. mod_jk should fix that. 
+
+The layered approach provided by the jk library makes it easier to support both Apache1.3.x and Apache2.xx. 
+Better support for SSL. mod_jserv couldn't reliably identify whether a request was made via HTTP or HTTPS. mod_jk can, using the newer Ajpv13 protocol. 
+
+    
+Apache mod jk SSL
+--------------------------------------------
+
+ LoadModule ssl_module modules/mod_ssl.so
+    LoadModule jk_module modules/mod_jk.so
+    JkWorkersFile /usr/local/apache2/conf/workers.properties
+    JkShmFile     logs/mod_jk.shm
+    JkLogFile logs/mod_jk.log
+    JkLogLevel info
+    JkLogStampFormat "[%a %b %d %H:%M:%S %Y] "
+    JkMount  /mywebapp/* worker1
+    JkExtractSSL On
+    JkHTTPSIndicator HTTPS
+    JkSESSIONIndicator SSL_SESSION_ID
+    JkCIPHERIndicator SSL_CIPHER
+    JkCERTSIndicator SSL_CLIENT_CERT
+    
+    
+    
+     <VirtualHost _default_:443>
+
+       DocumentRoot "/var/lib/tomcat6/webapps/mywebapp"
+
+        SSLEngine on
+        SSLCipherSuite ALL:!ADH:!EXP56:RC4+RSA:+HIGH:+MEDIUM:+LOW:+SSLv2:+EXP:+eNULL
+        SSLOptions +StdEnvVars +ExportCertData
+
+        Alias /mywebapp "/var/lib/tomcat6/webapps/mywebapp"
+        <Directory "/var/lib/tomcat6/webapps/mywebapp">
+           Options Indexes FollowSymLinks
+           AllowOverride None
+           Order allow,deny
+           Allow from all
+        </Directory>
+
+        JkMount /mywebapp/* worker1
+
+        <Location "/mywebapp/WEB-INF/">
+           AllowOverride None
+           Deny from all
+        </Location>
+     </VirtualHost>
+     
+     
+WEB-INF
+------------------------------
+This means that WEB-INF resources are accessible to the resource loader of your Web-Application and not directly visible for the public.
+
+This is why a lot of projects put their resources like JSP files, JARs/libraries and their own class files or property files or any other sensitive information in the WEB-INF folder. Otherwise they would be accessible by using a simple static URL (usefull to load CSS or Javascript for instance).
+     
+     
+
+Advanced LB
+-----------------------------------------
+
+For maintenance purposes you can tell the load balancer to not allow any new sessions on some members, or even not use them at all. This is controlled by the member attribute activation. The value Active allows normal use of a member, disabled will not create new sessions on it, but still allow sticky requests, and stopped will no longer send any requests to the member. Switching the activation from "active" to "disabled" some time before maintenance will drain the sessions on the worker and minimize disruption. Depending on the usage pattern of the application, draining will take from minutes to hours. Switching the worker to stopped immediately before maintenance will reduce logging of false errors by mod_jk.
 
 
+# The advanced router LB worker
+  worker.list=router
+  worker.router.type=lb
+  worker.router.balance_workers=worker1,worker2
+
+  # Define the first member worker
+  worker.worker1.type=ajp13
+  worker.worker1.host=myhost1
+  worker.worker1.port=8009
+  # Define preferred failover node for worker1
+  worker.worker1.redirect=worker2
+
+  # Define the second member worker
+  worker.worker2.type=ajp13
+  worker.worker2.host=myhost2
+  worker.worker2.port=8009
+  # Disable worker2 for all requests except failover
+  worker.worker2.activation=disabled
+     
+     
+
+# Define list of workers that will be used
+# for mapping requests
+worker.list=loadbalancer,status
+
+
+ NEW
+ 
+# Define Node1
+# modify the host as your host IP or DNS name.
+worker.node1.port=8009
+worker.node1.host=node1.mydomain.com
+worker.node1.type=ajp13
+worker.node1.ping_mode=A
+worker.node1.lbfactor=1 
+
+# Define Node2
+# modify the host as your host IP or DNS name.
+worker.node2.port=8009
+worker.node2.host=node2.mydomain.com
+worker.node2.type=ajp13
+worker.node2.ping_mode=A
+worker.node2.lbfactor=1
+
+# Load-balancing behavior
+worker.loadbalancer.type=lb
+worker.loadbalancer.balance_workers=node1,node2
+worker.loadbalancer.sticky_session=1
+
+# Status worker for managing load balancer
+worker.status.type=status
 
 
 
