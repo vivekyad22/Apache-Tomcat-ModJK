@@ -79,7 +79,7 @@ http://serverfault.com/questions/174857/tomcat-behind-apache-httpd-with-ssl-and-
 http://serverfault.com/questions/418590/ssl-configuration-tomcat-with-apache-and-mod-jk
 
 
-
+Set  below --
 Learn PermSize, HeapSize, Xmx Xmm , garbage collector
 
 http://crunchify.com/jvm-tuning-heapsize-stacksize-garbage-collection-fundamental/
@@ -89,6 +89,9 @@ The amount allocated for the Young(Eden) generation is the value specified with 
 http://stackoverflow.com/questions/1634216/what-is-permsize-in-java
 
 http://stackoverflow.com/questions/11341494/how-do-i-properly-set-the-permgen-size
+
+DB connection
+http://www.codejava.net/servers/tomcat/configuring-jndi-datasource-for-database-connection-pooling-in-tomcat
 
 
 
@@ -135,6 +138,7 @@ Apache mod jk SSL
     JkSESSIONIndicator SSL_SESSION_ID
     JkCIPHERIndicator SSL_CIPHER
     JkCERTSIndicator SSL_CLIENT_CERT
+    
     
     
     
@@ -228,6 +232,27 @@ worker.loadbalancer.sticky_session=1
 
 # Status worker for managing load balancer
 worker.status.type=status
+
+
+
+Set Java home 
+---------------------
+place a setenv.sh in the the bin directory with
+JAVA_HOME=/usr/java/jdk1.6.0_43/
+JRE_HOME=/usr/java/jdk1.6.0_43/jre
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
