@@ -83,6 +83,7 @@ Set  below --
 Learn PermSize, HeapSize, Xmx Xmm , garbage collector
 
 http://crunchify.com/jvm-tuning-heapsize-stacksize-garbage-collection-fundamental/
+http://crunchify.com/how-to-change-jvm-heap-setting-xms-xmx-of-tomcat/
 
 The amount allocated for the Young(Eden) generation is the value specified with -Xmn. The amount allocated for the older generation is the value of -Xmx minus the -Xmn. Generally, you don’t want the Eden to be too big or it will take too long for the GC to look through it for space that can be reclaimed.
 
@@ -94,17 +95,18 @@ DB connection
 http://www.codejava.net/servers/tomcat/configuring-jndi-datasource-for-database-connection-pooling-in-tomcat
 
 
-
-
 Inside the tomcat startup script /bin/catalina.sh, the following environmental variables are used:
 
 JAVA_HOME is the path of JDK that used to run the tomcat and web applications
 CATALINA_HOME is the path of the tomcat binaries files
 CATALINA_BASE is the path the tomcat configuration files
 
+# $JAVA_HOME/bin/keytool -genkey -alias tomcat -keyalg RSA
+
+
 SSL in server.xml inside conf
 
-Connector SSLEnabled="true" acceptCount="100" clientAuth="false"
+<Connector SSLEnabled="true" acceptCount="100" clientAuth="false"
     disableUploadTimeout="true" enableLookups="false" maxThreads="25"
     port="8443" keystoreFile="/Users/loiane/.keystore" keystorePass="password"
     protocol="org.apache.coyote.http11.Http11NioProtocol" scheme="https"
@@ -179,6 +181,8 @@ Advanced LB
 -----------------------------------------
 
 For maintenance purposes you can tell the load balancer to not allow any new sessions on some members, or even not use them at all. This is controlled by the member attribute activation. The value Active allows normal use of a member, disabled will not create new sessions on it, but still allow sticky requests, and stopped will no longer send any requests to the member. Switching the activation from "active" to "disabled" some time before maintenance will drain the sessions on the worker and minimize disruption. Depending on the usage pattern of the application, draining will take from minutes to hours. Switching the worker to stopped immediately before maintenance will reduce logging of false errors by mod_jk.
+
+Active|| Disabled || Stopped
 
 
 # The advanced router LB worker
